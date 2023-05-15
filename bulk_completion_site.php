@@ -32,7 +32,7 @@ $completiondata = [
 ];
 
 // Use all courseids, or replace with array of specific course ids.
-$courseids = get_all_courseids();
+$courseids = [98]; // get_all_courseids();
 
 // Specify module types.
 $modtypes = ['assign', 'quiz'];
@@ -99,7 +99,18 @@ function get_mods_of_type_in_course(int $courseid, array $modtypes) {
         $modules = get_coursemodules_in_course($modname, $courseid);
 
         // Turn each mod info classes.
-        $moduleinfos = array_map(fn($m) => cm_info::create($m), $modules);
+        $moduleinfos = array_map(function($m) {
+            try {
+                return cm_info::create($m);
+            } catch (Throwable $e) {
+                cli_writeln("Error with cmid: {$m->id}: " . $e->getMessage());
+                return null;
+            }
+        }, $modules);
+
+        // Filter out nulls.
+        $moduleinfos = array_filter($moduleinfos);
+
         $coursemods = [...$coursemods, ...$moduleinfos];
     }
 
