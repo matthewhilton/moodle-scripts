@@ -32,7 +32,7 @@ $completiondata = [
 ];
 
 // Use all courseids, or replace with array of specific course ids.
-$courseids = [98]; // get_all_courseids();
+$courseids = get_all_courseids();
 
 // Specify module types.
 $modtypes = ['assign', 'quiz'];
