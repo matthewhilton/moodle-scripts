@@ -31,6 +31,8 @@ $modtypes = [
     'quiz' => 99
 ];
 
+$triggercompletionupdate = false;
+
 // First login as admin user.
 \core\session\manager::init_empty_session();
 \core\session\manager::set_user(get_admin());
@@ -66,11 +68,13 @@ foreach ($courseids as $courseid) {
             }
 
             // Trigger completion update.
-            $modinfo = course_modinfo::instance($courseid);
-            rebuild_course_cache($courseid, true);
-            $modinfo = get_fast_modinfo($courseid);
-            $completion = new \completion_info($modinfo->get_course());
-            $completion->reset_all_state($modinfo->get_cm($cm->id));
+            if ($triggercompletionupdate) {
+                $modinfo = course_modinfo::instance($courseid);
+                rebuild_course_cache($courseid, true);
+                $modinfo = get_fast_modinfo($courseid);
+                $completion = new \completion_info($modinfo->get_course());
+                $completion->reset_all_state($modinfo->get_cm($cm->id));
+            }
         } catch (Throwable $e) {
             cli_writeln("Error with cmid {$cm->id}: {$e->getMessage()}");
         }
